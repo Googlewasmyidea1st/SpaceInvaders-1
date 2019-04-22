@@ -26,6 +26,7 @@ public class Game extends JPanel {
     ArrayList<ShipShot> shipShotToBeDeleted = new ArrayList<ShipShot>();
     int alienSpeed = 1;
     int score = 0;
+    String state = "Playing";
 
     //This method returns the score
     private int getScore() {
@@ -90,10 +91,27 @@ public class Game extends JPanel {
                     //later
                     alienToBeDeleted.add(a);
                     shipShotToBeDeleted.add(b);
+                    score += 1;
                 }
             }
         }
+        //This part of the code checks for collisions between the ship and all of the alien objects. If there is a
+        //collision, the game ends.
+        for(Alien a : this.alienArray) {
+            if (a.getBounds().intersects(ship.getBounds())) {
+                //This part of the code clears all of the aliens, ship shots, and the player object from the screen
+                for(Alien b : this.alienArray) {
+                    alienToBeDeleted.add(b);
+                }
+                for(ShipShot c : this.shipShotArray) {
+                    shipShotToBeDeleted.add(c);
+                }
+                state = "Game Over";
+                //Put score code here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
         //This part of the code removes objects we couldn't safely remove before from our "To Be Deleted" Lists
+        }
         alienArray.removeAll(alienToBeDeleted);
         shipShotArray.removeAll(shipShotToBeDeleted);
     }
