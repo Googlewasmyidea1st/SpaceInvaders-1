@@ -12,6 +12,9 @@ public class Ship {
     int nextx = 0;
     int xspd = 3;
     int shotcooldown = 0;
+    boolean left_move;
+    boolean right_move;
+    boolean shooting;
     private Game game;
 
     public Ship(Game game) {
@@ -19,6 +22,22 @@ public class Ship {
     }
 
     public void step() {
+        if (left_move && right_move) {
+            nextx = 0;
+        }
+        else if (left_move) {
+            nextx = -2;
+        }
+        else if (right_move) {
+            nextx = 2;
+        }
+        else {
+            nextx = 0;
+        }
+        if ((shooting) && (shotcooldown < 1)) {
+            game.shipShoot(x, y);
+            shotcooldown = 20;
+        }
         if (x + nextx > 0 && x + nextx < game.getWidth() - WIDTH)
             x = x + nextx;
         if (shotcooldown > 0)
@@ -34,16 +53,36 @@ public class Ship {
     }
 
     public void keyReleased(KeyEvent e) {
-        nextx = 0;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+            left_move = false;
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+            right_move = false;
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+            shooting = false;
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT)
-            nextx = -xspd;
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-            nextx = xspd;
-        if ((e.getKeyCode() == KeyEvent.VK_SPACE) && (shotcooldown == 0))
-            game.shipShoot(x,y);
-            shotcooldown = 20;
+        switch (game.state) {
+            case "playing":
+                if (e.getKeyCode() == KeyEvent.VK_LEFT)
+                    left_move = true;
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+                    right_move = true;
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    shooting = true;
+                }
+                break;
+            case "game_over":
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    game.setupGame();
+                    game.level = 1;
+                }
+                break;
+            case "start_menu":
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    game.setupGame();
+                }
+                break;
+        }
     }
 }
