@@ -10,6 +10,8 @@ public class Alien {
 
     int x = 0;
     int y = 0;
+    int initial_x;
+    int initial_y;
     int direction = 1;
     int xdisttraveled = 150;
     private Game game;
@@ -18,21 +20,20 @@ public class Alien {
         this.game = game;
         x = initx;
         y = inity;
+        initial_x = x;
+        initial_y = y;
     }
 
     void step() {
-        x += (game.alienSpeed * direction);
-        xdisttraveled += game.alienSpeed;
-        if (xdisttraveled > 300) {
-            xdisttraveled = 0;
-            direction *= -1;
-            y += 30;
+        //if (game.state == "playing") {
+            x += (game.alienSpeed * direction);
+            xdisttraveled += game.alienSpeed;
+            if (xdisttraveled > 300) {
+                xdisttraveled = 0;
+                direction *= -1;
+                y += 30;
+            //}
         }
-    }
-
-    //!!!Currently Unused!!!
-    private boolean collisionWithShip() {
-        return game.ship.getBounds().intersects(getBounds());
     }
 
     public void paint(Graphics2D g) {
