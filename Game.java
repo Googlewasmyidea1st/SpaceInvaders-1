@@ -30,6 +30,7 @@ public class Game extends JPanel {
     int timer = -1;
     int lives = 3;
     String state = "start_menu";
+    private String highScore = "";
 
     //This method returns the score
     private int getScore() {
@@ -129,6 +130,31 @@ public class Game extends JPanel {
                 //Put score code here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
+            
+             public String GetHighScore()
+            {
+            	//format:  Sam:100
+            	FileReader readFile = null;
+            	BufferedReader reader = null;
+            	try
+            	{
+            		readFile = new FileReader("highscore.dat");
+            		reader = new BufferReader(readFile);
+            		return reader.readLine();
+            	}
+            	catch (Exception e)
+            	{
+            		return "0";
+            	}
+            	finally 
+            	{
+            		try {
+            		reader.close();
+            		} catch (IOException e) {
+            			e.printStackTrace();
+            		}
+            	}
+            
             //This part of the code removes objects we couldn't safely remove before from our "To Be Deleted" Lists
         }
         alienArray.removeAll(alienToBeDeleted);
