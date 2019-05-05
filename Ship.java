@@ -3,9 +3,11 @@ package com.spaceinvaders;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 
 public class Ship {
-    private static final int WIDTH = 60;
+    private static final int WIDTH = 48;
     private static final int HEIGHT = 10;
     int x = 0;
     int y = 525;
@@ -16,9 +18,16 @@ public class Ship {
     boolean right_move;
     boolean shooting;
     private Game game;
+    private Image spr_ship;
 
     public Ship(Game game) {
         this.game = game;
+        loadImage();
+    }
+
+    private void loadImage() {
+        ImageIcon ship = new ImageIcon("src/sprites/ship.png");
+        spr_ship = ship.getImage();
     }
 
     public void step() {
@@ -36,7 +45,7 @@ public class Ship {
         }
         if ((shooting) && (shotcooldown < 1)) {
             game.shipShoot(x, y);
-            shotcooldown = 20;
+            shotcooldown = 50;
         }
         if (x + nextx > 0 && x + nextx < game.getWidth() - WIDTH)
             x = x + nextx;
@@ -45,7 +54,8 @@ public class Ship {
     }
 
     public void paint(Graphics2D g) {
-        g.fillRect(x, y, WIDTH, HEIGHT);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.drawImage(spr_ship, x, y, null);
     }
 
     public Rectangle getBounds() {
