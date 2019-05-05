@@ -29,7 +29,9 @@ public class Game extends JPanel {
     int level = 1;
     int timer = -1;
     int lives = 3;
+    int gameclock = 0;
     String state = "start_menu";
+    private String highScore = "";
 
     //This method returns the score
     private int getScore() {
@@ -66,9 +68,32 @@ public class Game extends JPanel {
     private void spawnAliens() {
         for (int i = 100; i < 401; i += 40) {
             for (int ii = 40; ii < 201; ii += 40) {
-                alienArray.add(new Alien(this, i, ii));
+                switch (ii) {
+                    case 40:
+                        alienArray.add(new Alien(this, i, ii, 30));
+                        break;
+                    case 80:
+                        alienArray.add(new Alien(this, i, ii, 20));
+                        break;
+                    case 120:
+                        alienArray.add(new Alien(this, i, ii, 20));
+                        break;
+                    case 160:
+                        alienArray.add(new Alien(this, i, ii, 10));
+                        break;
+                    case 200:
+                        alienArray.add(new Alien(this, i, ii, 10));
+                        break;
+                }
             }
         }
+    }
+
+    private void incrementGameClock() {
+        if (gameclock < 999999999)
+            gameclock += 1;
+        else
+            gameclock = 0;
     }
 
     //this method calls the "step" method of every object in the game. The step method is a method that executes every
@@ -100,7 +125,7 @@ public class Game extends JPanel {
                     //later
                     alienToBeDeleted.add(a);
                     shipShotToBeDeleted.add(b);
-                    score += 1;
+                    score += (a.score/2);
                 }
             }
         }
@@ -127,7 +152,30 @@ public class Game extends JPanel {
                     }
                 }
                 //Put score code here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                /*
+                public String GetHighScore()
+                {
+                    //format:  Sam:100
+                    FileReader readFile = null;
+                    BufferedReader reader = null;
+                    try
+                    {
+                        readFile = new FileReader("highscore.dat");
+                        reader = new BufferReader(readFile);
+                        return reader.readLine();
+                    }
+                    catch (Exception e)
+                    {
+                        return "0";
+                    }
+                    finally
+                    {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } */
             }
             //This part of the code removes objects we couldn't safely remove before from our "To Be Deleted" Lists
         }
@@ -159,6 +207,7 @@ public class Game extends JPanel {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        setBackground(Color.BLACK);
         switch (state) {
             case "playing":
                 for (Alien a : this.alienArray) {
@@ -170,8 +219,8 @@ public class Game extends JPanel {
                 ship.paint(g2d);
                 g2d.setColor(Color.GRAY);
                 g2d.setFont(new Font("Verdana", Font.BOLD, 30));
-                g2d.drawString(Integer.toString(lives), 30, 40);
-                g2d.drawString(Integer.toString(score), 300, 40);
+                g2d.drawString("Lives: " + Integer.toString(lives), 30, 40);
+                g2d.drawString("Score: " + Integer.toString(score), 300, 40);
                 break;
             case "try_again":
                 g2d.setColor(Color.GRAY);
@@ -230,7 +279,9 @@ public class Game extends JPanel {
                  game.step();
                  game.repaint();
                  game.checkAlienCount();
-                 game.checkCollisions();
+                 if (game.state == "playing")
+                     game.checkCollisions();
+                 game.incrementGameClock();
                  Thread.sleep(10);
             }
         }
