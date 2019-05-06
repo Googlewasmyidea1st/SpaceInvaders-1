@@ -103,3 +103,4 @@ public class Alien {
         return new Rectangle(x, y, DIAMETER, DIAMETER);
     }
 }
+
