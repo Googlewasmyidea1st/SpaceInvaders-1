@@ -217,15 +217,15 @@ public class Game extends JPanel {
                     b.paint(g2d);
                 }
                 ship.paint(g2d);
-                g2d.setColor(Color.GRAY);
-                g2d.setFont(new Font("Verdana", Font.BOLD, 30));
-                g2d.drawString("Lives: " + Integer.toString(lives), 30, 40);
-                g2d.drawString("Score: " + Integer.toString(score), 300, 40);
+                g2d.setColor(Color.CYAN);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 30));
+                g2d.drawString("Lives: " + Integer.toString(lives), 20, 40);
+                g2d.drawString("Score: " + Integer.toString(score), 470, 40);
                 break;
             case "try_again":
-                g2d.setColor(Color.GRAY);
-                g2d.setFont(new Font("Verdana", Font.BOLD, 60));
-                g2d.drawString("Try Again", 30, 300);
+                g2d.setColor(Color.YELLOW);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 90));
+                g2d.drawString("Try Again", 100, 300);
                 if (timer > 0) {
                    timer -= 1;
                 }
@@ -235,11 +235,11 @@ public class Game extends JPanel {
                 }
                 break;
             case "game_over":
-                g2d.setColor(Color.GRAY);
-                g2d.setFont(new Font("Verdana", Font.BOLD, 60));
-                g2d.drawString("GAME OVER", 30, 300);
-                g2d.setFont(new Font("Verdana", Font.BOLD, 40));
-                g2d.drawString("Press SPACE to try again", 30, 400);
+                g2d.setColor(Color.RED);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 150));
+                g2d.drawString("GAME OVER", 100, 300);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 40));
+                g2d.drawString("Press SPACE to try again", 100, 400);
                 break;
             case "start_menu":
                 g2d.setColor(Color.GRAY);
@@ -247,6 +247,7 @@ public class Game extends JPanel {
                 g2d.drawString("SPACE INVADERS", 30, 250);
                 g2d.setFont(new Font("Verdana", Font.BOLD, 20));
                 g2d.drawString("By: Daniel Scott and Miranda Thompson", 30, 300);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 35));
                 g2d.drawString("Press SPACE to begin", 30, 400);
                 break;
             }
@@ -271,7 +272,7 @@ public class Game extends JPanel {
             JFrame frame = new JFrame("Space Invaders");
             Game game = new Game();
             frame.add(game);
-            frame.setSize(600, 600);
+            frame.setSize(600, 650);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             //this is the main loop, which will repeat for as long as the game is running
