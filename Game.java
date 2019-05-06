@@ -12,18 +12,26 @@ import java.util.Iterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import java.util.concurrent.ThreadLocalRandom;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
 public class Game extends JPanel {
 
     //Initialize Variables, Array Lists, and Iterators
     Ship ship = new Ship(this);
+    private Image spr_startmenualien;
     //The ArrayLists for Aliens and ShipShots hold all of those objects currently created, which makes it convenient
     //to iterate through them.
     ArrayList<Alien> alienArray = new ArrayList<Alien>();
     ArrayList<ShipShot> shipShotArray = new ArrayList<ShipShot>();
+    ArrayList<AlienShot> alienShotArray = new ArrayList<AlienShot>();
+    ArrayList<Barricade> barricadeArray = new ArrayList<Barricade>();
     ArrayList<Alien> alienToBeDeleted = new ArrayList<Alien>();
     ArrayList<ShipShot> shipShotToBeDeleted = new ArrayList<ShipShot>();
+    ArrayList<AlienShot> alienShotToBeDeleted = new ArrayList<AlienShot>();
+    ArrayList<Barricade> barricadeToBeDeleted = new ArrayList<Barricade>();
     int alienSpeed = 1;
     int score = 0;
     int level = 1;
@@ -57,6 +65,12 @@ public class Game extends JPanel {
             }
         });
         setFocusable(true);
+        loadImage();
+    }
+
+    private void loadImage() {
+        ImageIcon startmenualien = new ImageIcon("src/sprites/StartMenuAlien.png");
+        spr_startmenualien = startmenualien.getImage();
     }
 
     //this method creates a ship shot object and adds it to the shipShotArray
@@ -64,9 +78,33 @@ public class Game extends JPanel {
         shipShotArray.add(new ShipShot(this, x, y));
     }
 
+    private void spawnBarricades() {
+        for (int add = 30; add < 481; add += 150) {
+            for (int row1 = 20; row1 < 41; row1 += 10) {
+                barricadeArray.add(new Barricade(this, (row1 + add), 450));
+            }
+            for (int row2 = 10; row2 < 51; row2 += 10) {
+                barricadeArray.add(new Barricade(this, (row2 + add), 460));
+            }
+            for (int row3 = 0; row3 < 61; row3 += 10) {
+                barricadeArray.add(new Barricade(this, (row3 + add), 470));
+            }
+            for (int row4 = 0; row4 < 61; row4 += 10) {
+                if (row4 != 30) {
+                    barricadeArray.add(new Barricade(this, (row4 + add), 480));
+                }
+            }
+            for (int row5 = 0; row5 < 61; row5 += 10) {
+                if (!(19 < row5 && row5 < 41)) {
+                    barricadeArray.add(new Barricade(this, (row5 + add), 490));
+                }
+            }
+        }
+
+    }
     //this method spawns all aliens in their starting positions
     private void spawnAliens() {
-        for (int i = 100; i < 401; i += 40) {
+        for (int i = 150; i < 401; i += 40) {
             for (int ii = 40; ii < 201; ii += 40) {
                 switch (ii) {
                     case 40:
@@ -105,6 +143,9 @@ public class Game extends JPanel {
         for (ShipShot b : this.shipShotArray) {
             b.step();
         }
+        for (AlienShot c : this.alienShotArray) {
+            c.step();
+        }
         ship.step();
     }
 
@@ -112,77 +153,83 @@ public class Game extends JPanel {
         for (Alien a : this.alienArray) {
             a.x = a.initial_x;
             a.y = a.initial_y;
+            a.xdisttraveled = 150;
         }
     }
     //This method checks for collisions between different objects
     private void checkCollisions() {
-        //This part of the code checks for collisions between all of the ShipShot objects and all of the Alien objects
-        for (ShipShot b : this.shipShotArray) {
+        if (state == "playing") {
+            //This part of the code checks for collisions between all of the ShipShot objects and all of the Alien objects
+            for (ShipShot b : this.shipShotArray) {
+                for (Alien a : this.alienArray) {
+                    if (a.getBounds().intersects(b.getBounds())) {
+                        //because Java gets mad when we try to delete an item from a list we are currently iterating through,
+                        //we will instead add all colliding shipShots and Aliens into trash arrays, and we will delete them
+                        //later
+                        alienToBeDeleted.add(a);
+                        shipShotToBeDeleted.add(b);
+                        score += (a.score / 2);
+                    }
+                }
+                for (Barricade d : this.barricadeArray) {
+                    if (d.getBounds().intersects(b.getBounds())) {
+                        //because Java gets mad when we try to delete an item from a list we are currently iterating through,
+                        //we will instead add all colliding shipShots and Aliens into trash arrays, and we will delete them
+                        //later
+                        barricadeToBeDeleted.add(d);
+                        shipShotToBeDeleted.add(b);
+                    }
+                }
+            }
+            for (AlienShot c : this.alienShotArray) {
+                if (c.getBounds().intersects(ship.getBounds())) {
+                    death();
+                }
+                for (Barricade d : this.barricadeArray) {
+                    if (d.getBounds().intersects(c.getBounds())) {
+                        //because Java gets mad when we try to delete an item from a list we are currently iterating through,
+                        //we will instead add all colliding shipShots and Aliens into trash arrays, and we will delete them
+                        //later
+                        barricadeToBeDeleted.add(d);
+                        alienShotToBeDeleted.add(c);
+                    }
+                }
+            }
             for (Alien a : this.alienArray) {
-                if (a.getBounds().intersects(b.getBounds())) {
-                    //because Java gets mad when we try to delete an item from a list we are currently iterating through,
-                    //we will instead add all colliding shipShots and Aliens into trash arrays, and we will delete them
-                    //later
-                    alienToBeDeleted.add(a);
-                    shipShotToBeDeleted.add(b);
-                    score += (a.score/2);
+                if (a.y > 525) {
+                    death();
                 }
             }
-        }
-        //This part of the code checks for collisions between the ship and all of the alien objects. If there is a
-        //collision, the game ends.
-        for (Alien a : this.alienArray) {
-            if (a.getBounds().intersects(ship.getBounds())) {
-                //This part of the code clears all of the aliens, ship shots, and the player object from the screen
-                for (ShipShot c : this.shipShotArray) {
-                    shipShotToBeDeleted.add(c);
-                }
-                if (lives > 0) {
-                    if (state == "playing") {
-                        lives -= 1;
-                        state = "try_again";
-                        timer = 60;
-                    }
-                }
-                if (lives == 0) {
-                    state = "game_over";
-                    lives = 3;
-                    for (Alien b : this.alienArray) {
-                        alienToBeDeleted.add(b);
-                    }
-                }
-                //Put score code here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                /*
-                public String GetHighScore()
-                {
-                    //format:  Sam:100
-                    FileReader readFile = null;
-                    BufferedReader reader = null;
-                    try
-                    {
-                        readFile = new FileReader("highscore.dat");
-                        reader = new BufferReader(readFile);
-                        return reader.readLine();
-                    }
-                    catch (Exception e)
-                    {
-                        return "0";
-                    }
-                    finally
-                    {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } */
-            }
+            //This part of the code checks for collisions between the ship and all of the alien objects. If there is a
+            //collision, the game ends.
+
             //This part of the code removes objects we couldn't safely remove before from our "To Be Deleted" Lists
+            alienArray.removeAll(alienToBeDeleted);
+            shipShotArray.removeAll(shipShotToBeDeleted);
+            alienShotArray.removeAll(alienShotToBeDeleted);
+            barricadeArray.removeAll(barricadeToBeDeleted);
         }
-        alienArray.removeAll(alienToBeDeleted);
-        shipShotArray.removeAll(shipShotToBeDeleted);
     }
 
+    private void death() {
+        for (ShipShot c : this.shipShotArray) {
+            shipShotToBeDeleted.add(c);
+        }
+        if (lives > 0) {
+            if (state == "playing") {
+                lives -= 1;
+                state = "try_again";
+                timer = 60;
+            }
+        }
+        if (lives == 0) {
+            state = "game_over";
+            lives = 3;
+            for (Alien b : this.alienArray) {
+                alienToBeDeleted.add(b);
+            }
+        }
+    }
     //This method checks how many Aliens are remaining, and adjusts the alienSpeed variable accordingly
     private void checkAlienCount() {
         int alienCount = alienArray.size();
@@ -216,20 +263,25 @@ public class Game extends JPanel {
                 for (ShipShot b : this.shipShotArray) {
                     b.paint(g2d);
                 }
+                for (AlienShot c : this.alienShotArray) {
+                    c.paint(g2d);
+                }
+                for (Barricade d : this.barricadeArray) {
+                    d.paint(g2d);
+                }
                 ship.paint(g2d);
-                 g2d.setColor(Color.CYAN);
-        g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 30));
-        g2d.drawString("Lives: " + Integer.toString(lives), 20, 40);
-        g2d.drawString("Score: " + Integer.toString(score), 470, 40);
-        break;
+                g2d.setColor(Color.CYAN);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 30));
+                g2d.drawString("Lives: " + Integer.toString(lives), 20, 40);
+                g2d.drawString("Score: " + Integer.toString(score), 470, 40);
+                break;
             case "try_again":
                 g2d.setColor(Color.YELLOW);
                 g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 90));
                 g2d.drawString("TRY AGAIN!", 100, 300);
                 if (timer > 0) {
-                   timer -= 1;
-                }
-                else {
+                    timer -= 1;
+                } else {
                     resetAlienPositions();
                     state = "playing";
                 }
@@ -249,10 +301,19 @@ public class Game extends JPanel {
                 g2d.drawString("By: Daniel Scott and Miranda Thompson", 100, 300);
                 g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 35));
                 g2d.drawString("Press SPACE to begin", 150, 400);
+                g2d.drawImage(spr_startmenualien, 100, 100, null);
                 break;
+        }
+    }
+
+        public void AlienShoot() {
+            if (alienArray.size() > 0) {
+                int randomNum = ThreadLocalRandom.current().nextInt(0, alienArray.size());
+                int xpos = alienArray.get(randomNum).x;
+                int ypos = alienArray.get(randomNum).y;
+                alienShotArray.add(new AlienShot(this, xpos, ypos));
             }
         }
-
         //This method brings up a text box which tells the player they got a game over
         public void gameOver () {
             JOptionPane.showMessageDialog(this, "your score is: " + getScore(),
@@ -264,6 +325,7 @@ public class Game extends JPanel {
         score = 0;
         state = "playing";
         spawnAliens();
+        spawnBarricades();
         }
 
         //the main method
@@ -274,6 +336,7 @@ public class Game extends JPanel {
             frame.add(game);
             frame.setSize(600, 650);
             frame.setVisible(true);
+            frame.setResizable(false);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             //this is the main loop, which will repeat for as long as the game is running
             while (true) {
@@ -282,6 +345,9 @@ public class Game extends JPanel {
                  game.checkAlienCount();
                  if (game.state == "playing")
                      game.checkCollisions();
+                     if ((game.gameclock % 100) == 0) {
+                         game.AlienShoot();
+                     }
                  game.incrementGameClock();
                  Thread.sleep(10);
             }
