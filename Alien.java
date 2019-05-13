@@ -1,12 +1,10 @@
 package com.spaceinvaders;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 
-import static java.lang.Math.abs;
+import javax.swing.ImageIcon;
 
 public class Alien {
     private static final int DIAMETER = 30;
@@ -27,6 +25,7 @@ public class Alien {
     private Image spr_alien3_1;
     private Image spr_alien3_2;
 
+    //constructor
     public Alien(Game game, int initx, int inity, int initscore) {
         this.game = game;
         x = initx;
@@ -37,6 +36,7 @@ public class Alien {
         loadImage();
     }
 
+    //loadImage() loads the alien's sprites into memory
     private void loadImage() {
         ImageIcon alien1_1 = new ImageIcon("src/sprites/alien1_1.png");
         spr_alien1_1 = alien1_1.getImage();
@@ -52,7 +52,9 @@ public class Alien {
         spr_alien3_2 = alien3_2.getImage();
     }
 
+    //step() executes every frame of the game
     void step() {
+        //every 16 frames, change sprite
         if ((game.gameclock % 16) == 0) {
             if (anim_frame == 1) {
                 anim_frame = 2;
@@ -61,9 +63,11 @@ public class Alien {
                 anim_frame = 1;
             }
         }
-        if ((game.gameclock % 2) == 0) {
+        //every 4 frames, move
+        if ((game.gameclock % 4) == 0) {
             x += (game.alienSpeed * direction);
             xdisttraveled += game.alienSpeed;
+            //after moving a certain horizontal distance, move down and change horizontal direction
             if (xdisttraveled > 300) {
                 xdisttraveled = 0;
                 direction *= -1;
@@ -72,6 +76,7 @@ public class Alien {
         }
     }
 
+    //paint() draws the alien to the screen
     public void paint(Graphics2D g) {
         Graphics2D g2d = (Graphics2D) g;
         switch (score) {
@@ -99,8 +104,8 @@ public class Alien {
         }
     }
 
+    //getBounds() is used for collision detection
     public Rectangle getBounds() {
         return new Rectangle(x, y, DIAMETER, DIAMETER);
     }
 }
-
