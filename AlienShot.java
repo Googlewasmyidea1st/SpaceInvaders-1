@@ -16,6 +16,7 @@ public class AlienShot {
     private Image spr_alienshot_3;
     private Image spr_alienshot_4;
 
+    //constructor
     public AlienShot(Game game, int initx, int inity) {
         this.game = game;
         x = initx;
@@ -23,6 +24,7 @@ public class AlienShot {
         loadImage();
     }
 
+    //loadImage() loads AlienShot's sprites to memory
     private void loadImage() {
         ImageIcon alienshot_1 = new ImageIcon("src/sprites/AlienShot_1.png");
         spr_alienshot_1 = alienshot_1.getImage();
@@ -34,6 +36,7 @@ public class AlienShot {
         spr_alienshot_4 = alienshot_4.getImage();
     }
 
+    //step() is executed every frame, and moves the AlienShot down as well as handling animation
     void step() {
         y += 4;
         if ((game.gameclock % 4) == 0) {
@@ -46,6 +49,7 @@ public class AlienShot {
         }
     }
 
+    //paint() draws the AlienShot to the screen
     public void paint(Graphics2D g) {
         Graphics2D g2d = (Graphics2D) g;
         switch(anim_frame) {
@@ -64,6 +68,7 @@ public class AlienShot {
         }
     }
 
+    //getBounds() is used for collision detection
     public Rectangle getBounds() {
         return new Rectangle(x, y, WIDTH, HEIGHT);
     }
