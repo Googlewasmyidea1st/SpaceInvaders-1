@@ -2,9 +2,11 @@ package com.spaceinvaders;
 
 import java.awt.*;
 import java.awt.Image;
+
 import javax.swing.ImageIcon;
 
 public class ShipShot {
+    //initialize variables
     int x = 0;
     int y = 0;
     int anim_frame = 1;
@@ -16,6 +18,7 @@ public class ShipShot {
     private Image spr_shipshot_3;
     private Image spr_shipshot_4;
 
+    //constructor
     public ShipShot(Game game, int initx, int inity) {
         this.game = game;
         x = initx + 30;
@@ -23,6 +26,7 @@ public class ShipShot {
         loadImage();
     }
 
+    //loadImage() loads shipShots sprites to memory
     private void loadImage() {
         ImageIcon shipshot_1 = new ImageIcon("src/sprites/ShipShot_1.png");
         spr_shipshot_1 = shipshot_1.getImage();
@@ -34,6 +38,7 @@ public class ShipShot {
         spr_shipshot_4 = shipshot_4.getImage();
     }
 
+    //step() executes every frame, and moves the shipShot upwards as well as handling animation
     void step() {
         y -= 6;
         if ((game.gameclock % 4) == 0) {
@@ -46,6 +51,7 @@ public class ShipShot {
         }
     }
 
+    //paint() draws shipShot to the screen
     public void paint(Graphics2D g) {
         Graphics2D g2d = (Graphics2D) g;
         switch(anim_frame) {
@@ -64,6 +70,7 @@ public class ShipShot {
         }
     }
 
+    //getBounds() is used for collision detection
     public Rectangle getBounds() {
         return new Rectangle(x, y, WIDTH, HEIGHT);
     }
