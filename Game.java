@@ -79,7 +79,11 @@ public class Game extends JPanel {
     //loadImage() loads a large png of a space invader which is displayed on the start menu
     private void loadImage() {
         ImageIcon startmenualien = new ImageIcon("src/sprites/StartMenuAlien.png");
+        ImageIcon colorfulaliens = new ImageIcon("src/sprites/ColorfulAliens.png");
+        ImageIcon tryagainalien = new ImageIcon("src/sprites/TryAgainAlien.png");
         spr_startmenualien = startmenualien.getImage();
+        spr_colorfulaliens = colorfulaliens.getImage();
+        spr_tryagainalien = tryagainalien.getImage();
     }
 
     //shipShoot() creates a ship shot object and adds it to the shipShotArray, this method is called from the Ship
@@ -323,16 +327,17 @@ public class Game extends JPanel {
                 }
                 ship.paint(g2d);
                 //draw all GUI elements to the frame
-                g2d.setColor(Color.CYAN);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 30));
+                 g2d.setColor(Color.CYAN);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 30));
                 g2d.drawString("Lives: " + Integer.toString(lives), 20, 40);
                 g2d.drawString("Score: " + Integer.toString(score), 470, 40);
                 g2d.drawString("High Score: " + Integer.toString(high_score), 235, 40);
                 break;
             case "try_again":
                 g2d.setColor(Color.YELLOW);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 90));
-                g2d.drawString("TRY AGAIN!", 100, 300);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 100));
+                g2d.drawString("TRY AGAIN!", 110, 200);
+                g2d.drawImage(spr_tryagainalien, 100, 300, null);
                 //after 60 ms, reset game state back to "playing"
                 if (timer > 0) {
                     timer -= 1;
@@ -343,20 +348,21 @@ public class Game extends JPanel {
                 break;
             case "game_over":
                 g2d.setColor(Color.RED);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 120));
-                g2d.drawString("GAME OVER", 60, 300);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 40));
-                g2d.drawString("Press SPACE to try again", 120, 400);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 120));
+                g2d.drawString("GAME OVER", 60, 250);
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 40));
+                g2d.drawString("Press SPACE to try again", 120, 350);
+                g2d.drawImage(spr_colorfulaliens, 100, 400, null);
                 break;
             case "start_menu":
                 g2d.setColor(Color.GREEN);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 90));
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 90));
                 g2d.drawString("SPACE INVADERS", 30, 250);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 30));
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 30));
                 g2d.drawString("By: Daniel Scott and Miranda Thompson", 100, 300);
-                g2d.setFont(new Font("Agency FB", Font.BOLD, 35));
+                g2d.setFont(new Font("Agency FB Bold", Font.BOLD, 35));
                 g2d.drawString("Press SPACE to begin", 150, 400);
-                g2d.drawImage(spr_startmenualien, 100, 100, null);
+                g2d.drawImage(spr_startmenualien, 180, 400, null);
                 break;
         }
     }
